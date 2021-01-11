@@ -1,0 +1,33 @@
+{
+  "name": "tinyact",
+  "version": "0.0.3",
+  "description": "Super Tiny React Alternative",
+  "main": "dist/tinyact.js",
+  "module": "dist/tniyact.esm.js",
+  "umd:main": "dist/tiniyact.umd.js",
+  "umd:name": "tinyact",
+  "scripts": {
+    "build": "rollup -c",
+    "test": "node test"
+  },
+  "author": "Lsong",
+  "license": "MIT",
+  "devDependencies": {
+    "rollup": "^2.18.0"
+  },
+  "directories": {
+    "example": "example",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/song940/tinyact.git"
+  },
+  "bugs": {
+    "url": "https://github.com/song940/tinyact/issues"
+  },
+  "homepage": "https://github.com/song940/tinyact#readme",
+  "keywords": [
+    "react"
+  ]
+}
