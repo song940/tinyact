@@ -5,18 +5,16 @@ import {
   dispatchUpdate,
 } from './reconciler.js';
 
-export const useReducer = (reducer, initial) => {
+export const useState = initial => {
   const oldHook = getLastHook();
   const hook = {
     state: oldHook ? oldHook.state : initial,
     queue: []
   };
-  const actions = oldHook ? oldHook.queue : []
-  actions.forEach(action => {
-    hook.state = action(hook.state)
-  });
-  const setState = action => {
-    hook.queue.push(action);
+  const actions = oldHook ? oldHook.queue : [];
+  actions.forEach(action => hook.state = action(hook.state));
+  const setState = state => {
+    hook.queue.push(() => state);
     const currentRoot = getCurrentRoot();
     const rootFiber = {
       dom: currentRoot.dom,
@@ -26,13 +24,14 @@ export const useReducer = (reducer, initial) => {
     dispatchUpdate(rootFiber);
   };
   registerHook(hook);
-  const dispatch = action =>
-    setState(reducer(hook.state, action));
-  return [hook.state, dispatch];
+  return [hook.state, setState];
 };
 
-export const useState = initial => {
-  return useReducer(null, initial);
+export const useReducer = (reducer, initial) => {
+  if (!reducer) return useState(initial);
+  const [state, setState] = useState(initial);
+  const dispatch = action => setState(reducer(state, action));
+  return [state, dispatch];
 };
 
 export const isChanged = (a, b) => {

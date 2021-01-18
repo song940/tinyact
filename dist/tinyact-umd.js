@@ -280,18 +280,16 @@
     return hook;
   };
 
-  const useReducer = (reducer, initial) => {
+  const useState = initial => {
     const oldHook = getLastHook();
     const hook = {
       state: oldHook ? oldHook.state : initial,
       queue: []
     };
     const actions = oldHook ? oldHook.queue : [];
-    actions.forEach(action => {
-      hook.state = action(hook.state);
-    });
-    const setState = action => {
-      hook.queue.push(action);
+    actions.forEach(action => hook.state = action(hook.state));
+    const setState = state => {
+      hook.queue.push(() => state);
       const currentRoot = getCurrentRoot();
       const rootFiber = {
         dom: currentRoot.dom,
@@ -301,13 +299,14 @@
       dispatchUpdate(rootFiber);
     };
     registerHook(hook);
-    const dispatch = action =>
-      setState(reducer(hook.state, action));
-    return [hook.state, dispatch];
+    return [hook.state, setState];
   };
 
-  const useState = initial => {
-    return useReducer(null, initial);
+  const useReducer = (reducer, initial) => {
+    if (!reducer) return useState(initial);
+    const [state, setState] = useState(initial);
+    const dispatch = action => setState(reducer(state, action));
+    return [state, dispatch];
   };
 
   const isChanged = (a, b) => {

@@ -19,10 +19,9 @@ function reducer(n, action) {
   }
 }
 
-
 function Counter() {
-  // const [n, setState] = useState(0);
-  const [n, dispatch] = useReducer(reducer, 0);
+  const [n, setState] = useState(0);
+  // const [n, dispatch] = useReducer(reducer, 0);
   useEffect(() => {
     console.log('did mount');
   }, []);
@@ -31,7 +30,7 @@ function Counter() {
   }, [ n ]);
   return (
     <h1>
-      Count: {n}
+      <p>Count: {n}</p>
       <button onClick={() => setState(n + 1)} >click</button>
       <button onClick={() => dispatch({type: 'decrement'})}>-</button>
       <button onClick={() => dispatch({type: 'increment'})}>+</button>
