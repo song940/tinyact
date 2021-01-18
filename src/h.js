@@ -1,4 +1,8 @@
+
+const flattern = arr => [].concat.apply([], arr);
+
 export function createElement(type, props, ...children) {
+  children = flattern(children).filter(Boolean);
   return {
     type,
     props: {
