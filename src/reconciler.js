@@ -1,49 +1,5 @@
 import { createDom, updateDom } from './dom.js';
 
-function commitWork(fiber) {
-  if (!fiber) return;
-  const { } = fiber;
-  let domParentFiber = fiber.parent
-  while (!domParentFiber.dom) {
-    domParentFiber = domParentFiber.parent
-  }
-  const domParent = domParentFiber.dom
-
-  if (
-    fiber.effectTag === "PLACEMENT" &&
-    fiber.dom != null) {
-    domParent.appendChild(fiber.dom);
-  } else if (
-    fiber.effectTag === "UPDATE" &&
-    fiber.dom != null) {
-    updateDom(
-      fiber.dom,
-      fiber.alternate.props,
-      fiber.props
-    );
-  } else if (fiber.effectTag === "DELETION") {
-    commitDeletion(fiber, domParent);
-  }
-
-  commitWork(fiber.child)
-  commitWork(fiber.sibling)
-}
-
-function commitDeletion(fiber, domParent) {
-  if (fiber.dom) {
-    domParent.removeChild(fiber.dom)
-  } else {
-    commitDeletion(fiber.child, domParent)
-  }
-}
-
-function commitRoot() {
-  deletions.forEach(commitWork)
-  commitWork(wipRoot.child)
-  currentRoot = wipRoot
-  wipRoot = null
-}
-
 let hookIndex = null
 let wipFiber = null
 let nextUnitOfWork = null
@@ -100,19 +56,20 @@ function updateHostComponent(fiber) {
 }
 
 function reconcileChildren(wipFiber, elements) {
-  let index = 0
-  let oldFiber = wipFiber.alternate && wipFiber.alternate.child
-  let prevSibling = null
+  let index = 0;
+  let prevSibling = null;
+  let oldFiber =
+    wipFiber.alternate &&
+    wipFiber.alternate.child;
 
   while (index < elements.length || oldFiber != null) {
-    const element = elements[index]
-    let newFiber = null
+    const element = elements[index];
+    let newFiber = null;
 
     const sameType =
       oldFiber &&
       element &&
       element.type == oldFiber.type
-
     if (sameType) {
       newFiber = {
         type: oldFiber.type,
@@ -134,7 +91,7 @@ function reconcileChildren(wipFiber, elements) {
       }
     }
     if (oldFiber && !sameType) {
-      oldFiber.effectTag = "DELETION"
+      oldFiber.effectTag = "DELETION";
       deletions.push(oldFiber)
     }
 
@@ -153,10 +110,50 @@ function reconcileChildren(wipFiber, elements) {
   }
 }
 
+function commitWork(fiber) {
+  if (!fiber) return;
+  let domParentFiber = fiber.parent
+  while (!domParentFiber.dom) {
+    domParentFiber = domParentFiber.parent
+  }
+  const domParent = domParentFiber.dom
+
+  if (fiber.effectTag === "PLACEMENT" && fiber.dom != null) {
+    domParent.appendChild(fiber.dom);
+  } else if (fiber.effectTag === "UPDATE" && fiber.dom != null) {
+    updateDom(
+      fiber.dom,
+      fiber.alternate.props,
+      fiber.props
+    );
+  } else if (fiber.effectTag === "DELETION") {
+    commitDeletion(fiber, domParent);
+  }
+
+  if (fiber.effectTag !== 'DELETION') {
+    commitWork(fiber.child)
+    commitWork(fiber.sibling)
+  }
+}
+
+function commitDeletion(fiber, domParent) {
+  if (fiber.dom) {
+    domParent.removeChild(fiber.dom);
+  } else {
+    commitDeletion(fiber.child, domParent)
+  }
+}
+
+function commitRoot() {
+  deletions.forEach(commitWork);
+  commitWork(wipRoot.child)
+  currentRoot = wipRoot
+  wipRoot = null
+}
+
 export const dispatchUpdate = fiber => {
-  wipRoot = fiber;
   deletions = [];
-  return nextUnitOfWork = wipRoot;
+  return nextUnitOfWork = wipRoot = fiber;
 };
 
 export const render = (vnode, dom) => {
