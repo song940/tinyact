@@ -130,10 +130,9 @@ function commitWork(fiber) {
     commitDeletion(fiber, domParent);
   }
 
-  if (fiber.effectTag !== 'DELETION') {
-    commitWork(fiber.child)
-    commitWork(fiber.sibling)
-  }
+  fiber.effectTag !== 'DELETION' && 
+    commitWork(fiber.child);
+  commitWork(fiber.sibling);
 }
 
 function commitDeletion(fiber, domParent) {
