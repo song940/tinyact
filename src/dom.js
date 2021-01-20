@@ -4,10 +4,8 @@ export function createDom(fiber) {
   const dom =
     fiber.type == "TEXT_ELEMENT"
       ? document.createTextNode("")
-      : document.createElement(fiber.type)
-
-  updateDom(dom, {}, fiber.props)
-  return dom
+      : document.createElement(fiber.type);
+  return updateDom(dom, {}, fiber.props);
 }
 
 const isEvent = key => key.startsWith("on")
@@ -65,4 +63,5 @@ export function updateDom(dom, prevProps, nextProps) {
         nextProps[name]
       )
     })
+  return dom;
 }
