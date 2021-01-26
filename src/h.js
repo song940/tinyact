@@ -2,7 +2,7 @@
 const flattern = arr => [].concat.apply([], arr);
 
 export function createElement(type, props, ...children) {
-  children = flattern(children).filter(x => x !== void(0));
+  children = flattern(children).filter(x => x !== void(0) && x !== null);
   return {
     type,
     props: {
