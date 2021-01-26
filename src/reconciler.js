@@ -137,7 +137,9 @@ function commitWork(fiber) {
 
 function commitDeletion(fiber, domParent) {
   if (fiber.dom) {
-    domParent.removeChild(fiber.dom);
+    try {
+      domParent.removeChild(fiber.dom);
+    } catch(e) {}
   } else {
     commitDeletion(fiber.child, domParent)
   }
