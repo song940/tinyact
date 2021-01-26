@@ -11,10 +11,11 @@ export const useState = initial => {
     state: oldHook ? oldHook.state : initial,
     queue: []
   };
-  const actions = oldHook ? oldHook.queue : [];
-  actions.forEach(action => hook.state = action(hook.state));
+  // const actions = oldHook ? oldHook.queue : [];
+  // actions.forEach(action => hook.state = action(hook.state));
   const setState = state => {
-    hook.queue.push(() => state);
+    hook.state = state;
+    // hook.queue.push(() => state);
     const currentRoot = getCurrentRoot();
     const rootFiber = {
       dom: currentRoot.dom,
